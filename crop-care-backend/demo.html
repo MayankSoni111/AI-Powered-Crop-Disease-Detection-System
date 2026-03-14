@@ -405,6 +405,138 @@
             color: var(--upcoming);
         }
 
+        /* ── Weekly Log Styles ───────────────────────────────────────── */
+        .section-label {
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--primary-dark);
+            margin: 18px 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .week-row {
+            border: 1px solid #e0e7e0;
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            background: #f9fdf9;
+            transition: box-shadow 0.15s;
+        }
+
+        .week-row:hover {
+            box-shadow: 0 2px 8px rgba(46,125,50,0.08);
+        }
+
+        .week-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .week-label {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--primary-dark);
+        }
+
+        .week-dates {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .irr-counter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .irr-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            line-height: 1;
+            transition: all 0.15s;
+        }
+
+        .irr-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .irr-display {
+            font-size: 13px;
+            font-weight: 600;
+            flex: 1;
+            color: var(--text-main);
+        }
+
+        .irr-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .week-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 14px;
+            margin-top: 6px;
+        }
+
+        .mini-check {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: var(--text-main);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .mini-check input[type="checkbox"] {
+            accent-color: var(--primary);
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+        }
+
+        .week-summary {
+            font-size: 12px;
+            color: var(--primary-dark);
+            background: #e8f5e9;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-top: 8px;
+        }
+
+        .warning-box {
+            background: #fff8e1;
+            border-left: 3px solid var(--medium);
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #5d4037;
+            display: none;
+        }
+
         #dashboard-content {
             display: none;
         }
@@ -427,6 +559,7 @@
             <div class="card">
                 <h2>Quick Demo Setup</h2>
                 <form id="demo-form">
+                    <!-- Crop + Days -->
                     <div class="form-group">
                         <label for="crop-name">Crop Type</label>
                         <select id="crop-name" class="form-control">
@@ -439,34 +572,49 @@
 
                     <div class="form-group">
                         <label for="days-sown">Days Since Sowing</label>
-                        <input type="number" id="days-sown" class="form-control" value="25" min="0" max="150">
+                        <input type="number" id="days-sown" class="form-control" value="25" min="1" max="150">
                     </div>
 
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="irrigation-done">
-                        <label for="irrigation-done">Irrigation Done Recently</label>
+                    <!-- Farm Details -->
+                    <div class="section-label">🌍 Farm Details</div>
+
+                    <div class="form-group">
+                        <label for="soil-type">Soil Type</label>
+                        <select id="soil-type" class="form-control">
+                            <option value="loamy" selected>Loamy</option>
+                            <option value="sandy">Sandy</option>
+                            <option value="clay">Clay</option>
+                            <option value="silty">Silty</option>
+                        </select>
                     </div>
 
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="fertilizer-done">
-                        <label for="fertilizer-done">Fertilizer Applied Recently</label>
+                    <div class="form-group">
+                        <label for="region">Region</label>
+                        <select id="region" class="form-control">
+                            <option value="north_india" selected>North India</option>
+                            <option value="south_india">South India</option>
+                            <option value="east_india">East India</option>
+                            <option value="west_india">West India</option>
+                            <option value="central_india">Central India</option>
+                        </select>
                     </div>
 
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="weeding-done">
-                        <label for="weeding-done">Weeding Done Recently</label>
+                    <div class="form-group">
+                        <label for="season">Farming Season</label>
+                        <select id="season" class="form-control">
+                            <option value="rabi" selected>Rabi (November–March)</option>
+                            <option value="kharif">Kharif (June–October)</option>
+                            <option value="zaid">Zaid (March–June)</option>
+                        </select>
                     </div>
 
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="pesticide-done">
-                        <label for="pesticide-done">Pesticide Sprayed Recently</label>
-                    </div>
+                    <!-- Weekly Farming Log -->
+                    <div class="section-label">🌾 Weekly Farming Log</div>
 
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="fungicide-done">
-                        <label for="fungicide-done">Fungicide Sprayed Recently</label>
-                    </div>
+                    <div id="week-rows-container"></div>
+                    <div class="week-summary" id="week-summary">Fill in your farming activities above.</div>
 
+                    <br>
                     <button type="submit" id="generate-btn">Generate Crop Report</button>
                 </form>
 
@@ -520,103 +668,263 @@
     <script>
         const API_URL = "http://127.0.0.1:8002/api/v1/crop-care/dev/generate-test-season";
 
+        // ── Crop configuration (mirrors backend) ────────────────────────────
+        const CROP_CFG = {
+            wheat:  { maxIrr: 1, interval: 10, fertDay: 21, weedDay: 21, pestDay: 45, fungDay: 60 },
+            rice:   { maxIrr: 3, interval:  3, fertDay: 20, weedDay: 25, pestDay: 35, fungDay: 60 },
+            maize:  { maxIrr: 1, interval:  7, fertDay: 21, weedDay: 21, pestDay: 30, fungDay: 50 },
+            tomato: { maxIrr: 2, interval:  4, fertDay: 25, weedDay: 25, pestDay: 35, fungDay: 45 },
+        };
+
+        // ── Per-week state ──────────────────────────────────────────────────
+        let weekState = {}; // { 1: { irrigations, fertilizer, weeding, pesticide, fungicide, health_obs }, ... }
+
+        function fmt(d) {
+            return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        }
+
+        function sowDate(days) {
+            const d = new Date();
+            d.setDate(d.getDate() - days);
+            d.setHours(0, 0, 0, 0);
+            return d;
+        }
+
+        function rebuildWeeks() {
+            const crop = document.getElementById('crop-name').value;
+            const days = parseInt(document.getElementById('days-sown').value) || 1;
+            const cfg  = CROP_CFG[crop] || CROP_CFG.wheat;
+            const numWeeks = Math.max(1, Math.ceil(days / 7));
+            const sow  = sowDate(days);
+
+            // Preserve existing state, prune removed weeks
+            for (let w = 1; w <= numWeeks; w++) {
+                if (!weekState[w]) {
+                    weekState[w] = { irrigations: 0, fertilizer: false, weeding: false, pesticide: false, fungicide: false, health_obs: false };
+                }
+            }
+            Object.keys(weekState).forEach(w => { if (parseInt(w) > numWeeks) delete weekState[w]; });
+
+            renderRows(crop, days, numWeeks, sow, cfg);
+            updateSummary(numWeeks, cfg);
+        }
+
+        function renderRows(crop, days, numWeeks, sow, cfg) {
+            const container = document.getElementById('week-rows-container');
+            container.innerHTML = '';
+
+            for (let w = 1; w <= numWeeks; w++) {
+                const startDay = (w - 1) * 7;
+                const endDay   = Math.min(w * 7 - 1, days - 1);
+
+                const startDate = new Date(sow); startDate.setDate(sow.getDate() + startDay);
+                const endDate   = new Date(sow); endDate.setDate(sow.getDate() + endDay);
+
+                const st = weekState[w];
+
+                // Determine relevant checkboxes (show once milestone day falls within or before this week)
+                const weekEnd = w * 7;
+                const showFert   = weekEnd >= cfg.fertDay;
+                const showWeed   = weekEnd >= cfg.weedDay;
+                const showPest   = weekEnd >= cfg.pestDay;
+                const showFung   = weekEnd >= cfg.fungDay;
+                const showHealth = w >= 2;
+
+                const cropName = crop.charAt(0).toUpperCase() + crop.slice(1);
+                const irrHint  = `${cropName} needs water every ${cfg.interval} day${cfg.interval > 1 ? 's' : ''} — up to ${cfg.maxIrr} time${cfg.maxIrr > 1 ? 's' : ''} this week.`;
+
+                let cbHtml = '';
+                if (showFert)   cbHtml += `<label class="mini-check"><input type="checkbox" data-week="${w}" data-action="fertilizer" ${st.fertilizer ? 'checked' : ''}> 🌿 Fertilizer</label>`;
+                if (showWeed)   cbHtml += `<label class="mini-check"><input type="checkbox" data-week="${w}" data-action="weeding"   ${st.weeding   ? 'checked' : ''}> ✂️ Weeding</label>`;
+                if (showPest)   cbHtml += `<label class="mini-check"><input type="checkbox" data-week="${w}" data-action="pesticide" ${st.pesticide ? 'checked' : ''}> 🐛 Pesticide</label>`;
+                if (showFung)   cbHtml += `<label class="mini-check"><input type="checkbox" data-week="${w}" data-action="fungicide" ${st.fungicide ? 'checked' : ''}> 🍄 Fungicide</label>`;
+                if (showHealth) cbHtml += `<label class="mini-check"><input type="checkbox" data-week="${w}" data-action="health_obs" ${st.health_obs ? 'checked' : ''}> 🔍 Health Check</label>`;
+
+                const row = document.createElement('div');
+                row.className = 'week-row';
+                row.dataset.week = w;
+                row.innerHTML = `
+                    <div class="week-header">
+                        <span class="week-label">Week ${w}</span>
+                        <span class="week-dates">${fmt(startDate)} – ${fmt(endDate)}</span>
+                    </div>
+                    <div class="irr-counter">
+                        <button type="button" class="irr-btn" data-week="${w}" data-delta="-1">−</button>
+                        <span class="irr-display" id="irr-display-${w}">${st.irrigations} of ${cfg.maxIrr} irrigation${cfg.maxIrr > 1 ? 's' : ''}</span>
+                        <button type="button" class="irr-btn" data-week="${w}" data-delta="1">+</button>
+                    </div>
+                    <div class="irr-hint">${irrHint}</div>
+                    ${cbHtml ? `<div class="week-actions">${cbHtml}</div>` : ''}
+                `;
+                container.appendChild(row);
+            }
+
+            // Bind events
+            container.querySelectorAll('.irr-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const crop2 = document.getElementById('crop-name').value;
+                    const cfg2  = CROP_CFG[crop2] || CROP_CFG.wheat;
+                    const wk    = parseInt(this.dataset.week);
+                    const delta = parseInt(this.dataset.delta);
+                    weekState[wk].irrigations = Math.max(0, Math.min(cfg2.maxIrr, weekState[wk].irrigations + delta));
+                    document.getElementById(`irr-display-${wk}`).textContent =
+                        `${weekState[wk].irrigations} of ${cfg2.maxIrr} irrigation${cfg2.maxIrr > 1 ? 's' : ''}`;
+                    updateSummary(Object.keys(weekState).length, cfg2);
+                });
+            });
+
+            container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', function () {
+                    const wk = parseInt(this.dataset.week);
+                    weekState[wk][this.dataset.action] = this.checked;
+                    const numW = Object.keys(weekState).length;
+                    const crop2 = document.getElementById('crop-name').value;
+                    updateSummary(numW, CROP_CFG[crop2] || CROP_CFG.wheat);
+                });
+            });
+        }
+
+        function updateSummary(numWeeks, cfg) {
+            const states = Object.values(weekState);
+            const irrWeeks   = states.filter(s => s.irrigations > 0).length;
+            const totalIrr   = states.reduce((acc, s) => acc + s.irrigations, 0);
+            const fertApplied = states.some(s => s.fertilizer);
+            const weedDone   = states.some(s => s.weeding);
+            const pestDone   = states.some(s => s.pesticide);
+            const fungDone   = states.some(s => s.fungicide);
+
+            const parts = [`💧 ${irrWeeks} of ${numWeeks} weeks irrigated (${totalIrr} total)` ];
+            if (fertApplied) parts.push('🌿 fertilizer applied');
+            if (weedDone)    parts.push('✂️ weeding done');
+            if (pestDone)    parts.push('🐛 pesticide sprayed');
+            if (fungDone)    parts.push('🍄 fungicide sprayed');
+
+            document.getElementById('week-summary').textContent = parts.join('  •  ');
+        }
+
+        // ── Wire change listeners ───────────────────────────────────────────
+        document.getElementById('crop-name').addEventListener('change', rebuildWeeks);
+        document.getElementById('days-sown').addEventListener('input',  rebuildWeeks);
+
+        // ── Form submit ─────────────────────────────────────────────────────
         document.getElementById('demo-form').addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            const btn = document.getElementById('generate-btn');
-            const spinner = document.getElementById('loading-spinner');
-            const errorMsg = document.getElementById('error-msg');
-            const dashboardContent = document.getElementById('dashboard-content');
-            const resultsCard = document.getElementById('results-card');
+            const btn           = document.getElementById('generate-btn');
+            const spinner       = document.getElementById('loading-spinner');
+            const errorMsg      = document.getElementById('error-msg');
+            const dashContent   = document.getElementById('dashboard-content');
+            const resultsCard   = document.getElementById('results-card');
 
-            // Reset UI
-            errorMsg.style.display = 'none';
-            dashboardContent.style.display = 'none';
+            errorMsg.style.display    = 'none';
+            dashContent.style.display = 'none';
             resultsCard.style.display = 'none';
-            btn.disabled = true;
-            spinner.style.display = 'block';
+            btn.disabled              = true;
+            spinner.style.display     = 'block';
 
-            // Gather Data
+            // Build weekly_log array (only include weeks with any activity)
+            const weeklyLog = [];
+            Object.entries(weekState).forEach(([wk, st]) => {
+                if (st.irrigations || st.fertilizer || st.weeding || st.pesticide || st.fungicide || st.health_obs) {
+                    weeklyLog.push({
+                        week:               parseInt(wk),
+                        irrigations_done:   st.irrigations,
+                        fertilizer_done:    st.fertilizer,
+                        weeding_done:       st.weeding,
+                        pesticide_done:     st.pesticide,
+                        fungicide_done:     st.fungicide,
+                        health_observation: st.health_obs,
+                    });
+                }
+            });
+
             const payload = {
-                crop_name: document.getElementById('crop-name').value,
-                days_since_sowing: parseInt(document.getElementById('days-sown').value) || 0,
-                simulate_irrigation: document.getElementById('irrigation-done').checked,
-                simulate_fertilizer: document.getElementById('fertilizer-done').checked,
-                simulate_weeding: document.getElementById('weeding-done').checked,
-                simulate_pesticide: document.getElementById('pesticide-done').checked,
-                simulate_fungicide: document.getElementById('fungicide-done').checked
+                crop_name:        document.getElementById('crop-name').value,
+                days_since_sowing: parseInt(document.getElementById('days-sown').value) || 1,
+                soil_type:        document.getElementById('soil-type').value,
+                region:           document.getElementById('region').value,
+                season:           document.getElementById('season').value,
+                weekly_log:       weeklyLog,
             };
 
             try {
                 const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(payload)
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify(payload),
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Server returned ${response.status}. Is the backend running at port 8001?`);
-                }
+                if (!response.ok) throw new Error(`Server returned ${response.status}. Is the backend running on port 8002?`);
 
                 const data = await response.json();
                 renderDashboard(data);
 
             } catch (err) {
-                errorMsg.textContent = `Error: ${err.message}. Please ensure the FastAPI server is running on port 8001.`;
+                errorMsg.textContent  = `Error: ${err.message}`;
                 errorMsg.style.display = 'block';
             } finally {
-                btn.disabled = false;
+                btn.disabled          = false;
                 spinner.style.display = 'none';
             }
         });
 
+        // ── Render dashboard ────────────────────────────────────────────────
         function renderDashboard(data) {
-            // Show Cards
             document.getElementById('dashboard-content').style.display = 'block';
-            document.getElementById('results-card').style.display = 'block';
+            document.getElementById('results-card').style.display      = 'block';
 
-            // 1. Health Overview
+            // Health overview
             document.getElementById('display-crop-name').textContent = `${data.crop_name} — ${data.detected_stage}`;
-            document.getElementById('display-days').textContent = `Day ${data.days_since_sowing}`;
+            document.getElementById('display-days').textContent      = `Day ${data.days_since_sowing}`;
 
             const circle = document.getElementById('health-circle');
             circle.textContent = data.crop_health_score;
-            circle.className = `health-circle health-${data.health_status}`;
+            circle.className   = `health-circle health-${data.health_status}`;
 
-            const label = document.getElementById('health-label');
-            label.textContent = data.health_status;
-            label.className = `health-status-label color-${data.health_status}`;
+            const hlabel = document.getElementById('health-label');
+            hlabel.textContent = data.health_status;
+            hlabel.className   = `health-status-label color-${data.health_status}`;
 
             // Deductions
-            const deductionsBox = document.getElementById('deductions-container');
-            const deductionsList = document.getElementById('deductions-list');
-            deductionsList.innerHTML = '';
-
-            if (data.score_details && data.score_details.deductions && data.score_details.deductions.length > 0) {
-                deductionsBox.style.display = 'block';
+            const deductBox = document.getElementById('deductions-container');
+            const deductList = document.getElementById('deductions-list');
+            deductList.innerHTML = '';
+            if (data.score_details?.deductions?.length > 0) {
+                deductBox.style.display = 'block';
                 data.score_details.deductions.forEach(d => {
                     const li = document.createElement('li');
                     li.textContent = d;
-                    deductionsList.appendChild(li);
+                    deductList.appendChild(li);
                 });
             } else {
-                deductionsBox.style.display = 'none';
+                deductBox.style.display = 'none';
             }
 
-            // 2. Recommendations
-            const recContainer = document.getElementById('recommendations-container');
-            recContainer.innerHTML = '';
+            // Warnings (irrigation capping etc.)
+            let warnBox = document.getElementById('warning-box');
+            if (!warnBox) {
+                warnBox = document.createElement('div');
+                warnBox.id = 'warning-box';
+                warnBox.className = 'warning-box';
+                document.getElementById('results-card').prepend(warnBox);
+            }
+            if (data.warnings && data.warnings.length > 0) {
+                warnBox.innerHTML = '⚠️ ' + data.warnings.join('<br>⚠️ ');
+                warnBox.style.display = 'block';
+            } else {
+                warnBox.style.display = 'none';
+            }
 
-            if (data.recommendations && data.recommendations.length > 0) {
+            // Recommendations
+            const recCont = document.getElementById('recommendations-container');
+            recCont.innerHTML = '';
+            if (data.recommendations?.length > 0) {
                 data.recommendations.forEach(rec => {
-                    const el = document.createElement('div');
+                    const el  = document.createElement('div');
                     el.className = `rec-card urgency-${rec.urgency}`;
-
-                    let overdueHtml = '';
-                    if (rec.days_overdue && rec.days_overdue > 0) {
-                        overdueHtml = `<span class="overdue-text">⚠️ ${rec.days_overdue} days overdue</span>`;
-                    }
-
+                    const overdueHtml = (rec.days_overdue > 0)
+                        ? `<span class="overdue-text">⚠️ ${rec.days_overdue} days overdue</span>`
+                        : '';
                     el.innerHTML = `
                         <div class="rec-header">
                             <span class="rec-type">${rec.type}</span>
@@ -625,28 +933,21 @@
                         <div class="rec-msg">${rec.message}</div>
                         ${overdueHtml}
                     `;
-                    recContainer.appendChild(el);
+                    recCont.appendChild(el);
                 });
             } else {
-                recContainer.innerHTML = '<p style="font-size: 14px; color: #666;">No urgent actions required. Crop is healthy!</p>';
+                recCont.innerHTML = '<p style="font-size:14px;color:#666;">No urgent actions required. Crop is on track!</p>';
             }
 
-            // 3. Timeline
-            const tlContainer = document.getElementById('timeline-container');
-            tlContainer.innerHTML = '';
-
-            if (data.timeline && data.timeline.length > 0) {
+            // Timeline
+            const tlCont = document.getElementById('timeline-container');
+            tlCont.innerHTML = '';
+            if (data.timeline?.length > 0) {
                 data.timeline.forEach(m => {
                     const el = document.createElement('div');
                     el.className = `timeline-item ${m.status}`;
-
-                    // Format Date nicely
                     let dateStr = m.target_date;
-                    try {
-                        const d = new Date(m.target_date);
-                        dateStr = d.toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'});
-                    } catch (e) { }
-
+                    try { dateStr = new Date(m.target_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }); } catch (_) {}
                     el.innerHTML = `
                         <div class="tl-header">
                             <span class="tl-event">${m.event}</span>
@@ -654,13 +955,17 @@
                         </div>
                         <div class="tl-day">Day ${m.day} • <span class="tl-date">${dateStr}</span></div>
                     `;
-                    tlContainer.appendChild(el);
+                    tlCont.appendChild(el);
                 });
             } else {
-                tlContainer.innerHTML = '<p>No timeline data available.</p>';
+                tlCont.innerHTML = '<p>No timeline data available.</p>';
             }
         }
+
+        // ── Bootstrap ───────────────────────────────────────────────────────
+        rebuildWeeks();
     </script>
 </body>
 
 </html>
+
