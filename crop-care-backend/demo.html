@@ -427,6 +427,7 @@
             <div class="card">
                 <h2>Quick Demo Setup</h2>
                 <form id="demo-form">
+                    <!-- Crop + Days -->
                     <div class="form-group">
                         <label for="crop-name">Crop Type</label>
                         <select id="crop-name" class="form-control">
@@ -442,29 +443,79 @@
                         <input type="number" id="days-sown" class="form-control" value="25" min="0" max="150">
                     </div>
 
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="irrigation-done">
-                        <label for="irrigation-done">Irrigation Done Recently</label>
+                    <!-- Farm Details Section -->
+                    <p style="font-weight:600; font-size:13px; margin: 14px 0 8px; color: var(--primary-dark);">🌍 Farm Details</p>
+
+                    <div class="form-group">
+                        <label for="soil-type">Soil Type</label>
+                        <select id="soil-type" class="form-control">
+                            <option value="loamy" selected>Loamy</option>
+                            <option value="sandy">Sandy</option>
+                            <option value="clay">Clay</option>
+                            <option value="silty">Silty</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="region">Region</label>
+                        <select id="region" class="form-control">
+                            <option value="north_india" selected>North India</option>
+                            <option value="south_india">South India</option>
+                            <option value="east_india">East India</option>
+                            <option value="west_india">West India</option>
+                            <option value="central_india">Central India</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="season">Farming Season</label>
+                        <select id="season" class="form-control">
+                            <option value="rabi" selected>Rabi (November–March)</option>
+                            <option value="kharif">Kharif (June–October)</option>
+                            <option value="zaid">Zaid (March–June)</option>
+                        </select>
+                    </div>
+
+                    <!-- Simulated Actions Section -->
+                    <p style="font-weight:600; font-size:13px; margin: 14px 0 8px; color: var(--primary-dark);">🌾 Simulate Farming Actions</p>
+
+                    <div class="form-group">
+                        <label for="irrigation-status">Irrigation Status</label>
+                        <select id="irrigation-status" class="form-control">
+                            <option value="none" selected>None — no irrigation done</option>
+                            <option value="partial">Partially done — irrigated once, now overdue</option>
+                            <option value="on_schedule">Fully on schedule — all irrigations done</option>
+                        </select>
                     </div>
 
                     <div class="checkbox-group">
                         <input type="checkbox" id="fertilizer-done">
-                        <label for="fertilizer-done">Fertilizer Applied Recently</label>
+                        <label for="fertilizer-done">Nitrogen fertilizer applied</label>
                     </div>
 
                     <div class="checkbox-group">
                         <input type="checkbox" id="weeding-done">
-                        <label for="weeding-done">Weeding Done Recently</label>
+                        <label for="weeding-done">Weeding done</label>
                     </div>
 
                     <div class="checkbox-group">
                         <input type="checkbox" id="pesticide-done">
-                        <label for="pesticide-done">Pesticide Sprayed Recently</label>
+                        <label for="pesticide-done">Pesticide sprayed</label>
                     </div>
 
                     <div class="checkbox-group">
                         <input type="checkbox" id="fungicide-done">
-                        <label for="fungicide-done">Fungicide Sprayed Recently</label>
+                        <label for="fungicide-done">Fungicide sprayed</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="health-obs-done">
+                        <label for="health-obs-done">Health observation logged</label>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="soil-moisture-done">
+                        <label for="soil-moisture-done">Soil moisture checked</label>
                     </div>
 
                     <button type="submit" id="generate-btn">Generate Crop Report</button>
@@ -540,11 +591,16 @@
             const payload = {
                 crop_name: document.getElementById('crop-name').value,
                 days_since_sowing: parseInt(document.getElementById('days-sown').value) || 0,
-                simulate_irrigation: document.getElementById('irrigation-done').checked,
+                soil_type: document.getElementById('soil-type').value,
+                region: document.getElementById('region').value,
+                season: document.getElementById('season').value,
+                irrigation_status: document.getElementById('irrigation-status').value,
                 simulate_fertilizer: document.getElementById('fertilizer-done').checked,
                 simulate_weeding: document.getElementById('weeding-done').checked,
                 simulate_pesticide: document.getElementById('pesticide-done').checked,
-                simulate_fungicide: document.getElementById('fungicide-done').checked
+                simulate_fungicide: document.getElementById('fungicide-done').checked,
+                simulate_health_observation: document.getElementById('health-obs-done').checked,
+                simulate_soil_moisture: document.getElementById('soil-moisture-done').checked
             };
 
             try {
