@@ -46,11 +46,9 @@ CROP_MILESTONES: dict[str, list[dict]] = {
 
     "wheat": [
         {"day": 0,   "event": "Sowing",                  "action_type": None,                       "window": 0},
-        {"day": 5,   "event": "First Irrigation",         "action_type": "IRRIGATION",               "window": 5},
         {"day": 10,  "event": "Germination Check",        "action_type": "HEALTH_OBSERVATION",       "window": 5},
         {"day": 21,  "event": "Nitrogen Fertilizer",      "action_type": "FERTILIZER_APPLICATION",   "window": 7},
         {"day": 21,  "event": "First Weeding",            "action_type": "WEEDING",                  "window": 7},
-        {"day": 30,  "event": "Second Irrigation",        "action_type": "IRRIGATION",               "window": 7},
         {"day": 45,  "event": "Pesticide Spray",          "action_type": "PESTICIDE_SPRAY",          "window": 7},
         {"day": 60,  "event": "Fungicide Spray",          "action_type": "FUNGICIDE_SPRAY",          "window": 7},
         {"day": 90,  "event": "Pre-Harvest Observation",  "action_type": "HEALTH_OBSERVATION",       "window": 7},
@@ -60,26 +58,21 @@ CROP_MILESTONES: dict[str, list[dict]] = {
 
     "rice": [
         {"day": 0,   "event": "Transplanting / Sowing",   "action_type": None,                       "window": 0},
-        {"day": 5,   "event": "First Irrigation",         "action_type": "IRRIGATION",               "window": 3},
         {"day": 10,  "event": "Germination Check",        "action_type": "HEALTH_OBSERVATION",       "window": 5},
         {"day": 20,  "event": "Nitrogen Fertilizer",      "action_type": "FERTILIZER_APPLICATION",   "window": 7},
         {"day": 25,  "event": "Weeding",                  "action_type": "WEEDING",                  "window": 7},
         {"day": 35,  "event": "Pesticide Spray",          "action_type": "PESTICIDE_SPRAY",          "window": 7},
-        {"day": 50,  "event": "Flowering Irrigation",     "action_type": "IRRIGATION",               "window": 5},
         {"day": 60,  "event": "Fungicide Spray",          "action_type": "FUNGICIDE_SPRAY",          "window": 7},
         {"day": 80,  "event": "Pre-Harvest Observation",  "action_type": "HEALTH_OBSERVATION",       "window": 7},
-        {"day": 85,  "event": "Drain Field",              "action_type": "IRRIGATION",               "window": 5},
         {"day": 90,  "event": "Harvest",                  "action_type": "HARVEST_COMPLETE",         "window": 5},
     ],
 
     "maize": [
         {"day": 0,   "event": "Sowing",                   "action_type": None,                       "window": 0},
-        {"day": 4,   "event": "First Irrigation",         "action_type": "IRRIGATION",               "window": 3},
         {"day": 7,   "event": "Germination Check",        "action_type": "HEALTH_OBSERVATION",       "window": 3},
         {"day": 21,  "event": "Nitrogen Fertilizer",      "action_type": "FERTILIZER_APPLICATION",   "window": 7},
         {"day": 21,  "event": "Weeding",                  "action_type": "WEEDING",                  "window": 7},
         {"day": 30,  "event": "Fall Armyworm Scout",      "action_type": "PESTICIDE_SPRAY",          "window": 7},
-        {"day": 40,  "event": "Silking Irrigation",       "action_type": "IRRIGATION",               "window": 5},
         {"day": 50,  "event": "Fungicide Spray",          "action_type": "FUNGICIDE_SPRAY",          "window": 7},
         {"day": 70,  "event": "Maturity Check",           "action_type": "HEALTH_OBSERVATION",       "window": 7},
         {"day": 80,  "event": "Harvest",                  "action_type": "HARVEST_COMPLETE",         "window": 5},
@@ -87,7 +80,6 @@ CROP_MILESTONES: dict[str, list[dict]] = {
 
     "tomato": [
         {"day": 0,   "event": "Transplanting",            "action_type": None,                       "window": 0},
-        {"day": 2,   "event": "First Irrigation",         "action_type": "IRRIGATION",               "window": 2},
         {"day": 8,   "event": "Seedling Check",           "action_type": "HEALTH_OBSERVATION",       "window": 4},
         {"day": 21,  "event": "Stake / Trellis Support",  "action_type": "OTHER",                    "window": 7},
         {"day": 25,  "event": "NPK Fertilizer",           "action_type": "FERTILIZER_APPLICATION",   "window": 7},
@@ -109,6 +101,7 @@ CROP_MILESTONES: dict[str, list[dict]] = {
 def _milestone_status(
     season_id: str,
     action_type: Optional[str],
+    event_name: str,
     milestone_day: int,
     window: int,
     days_elapsed: int,
@@ -128,6 +121,33 @@ def _milestone_status(
     """
     if action_type is None:
         return "DONE"       # Sowing marker — season creation implies sowing happened
+
+    event_lower = event_name.lower()
+
+    # BUG 3: Germination checks happen naturally by day 10
+    if "germination check" in event_lower and days_elapsed > 10:
+        return "DONE"
+
+    # BUG 1 & 2: Broad action-type matching for Irrigation, Pesticide, Fungicide
+    if milestone_day <= days_elapsed:
+        if "irrigation" in event_lower:
+            if db.query(FarmingAction).filter(
+                FarmingAction.season_id == season_id,
+                FarmingAction.action_type == "IRRIGATION"
+            ).first():
+                return "DONE"
+        elif "pesticide" in event_lower:
+            if db.query(FarmingAction).filter(
+                FarmingAction.season_id == season_id,
+                FarmingAction.action_type == "PESTICIDE_SPRAY"
+            ).first():
+                return "DONE"
+        elif "fungicide" in event_lower:
+            if db.query(FarmingAction).filter(
+                FarmingAction.season_id == season_id,
+                FarmingAction.action_type == "FUNGICIDE_SPRAY"
+            ).first():
+                return "DONE"
 
     # Always query the database for the action within the target window
     sow = date.fromisoformat(sowing_date)
@@ -152,6 +172,7 @@ def _milestone_status(
             FarmingAction.action_type.in_(allowed_types),
             FarmingAction.action_date >= window_start,
             FarmingAction.action_date <= window_end,
+            FarmingAction.action_date <= date.today().isoformat(),  # PROBLEM 1 FIX: never count future actions as DONE
         )
         .first()
     )
@@ -169,6 +190,23 @@ def _milestone_status(
         return "UPCOMING"
 
 
+# Irrigation intervals (days) per crop, used for dynamic milestone generation
+CROP_IRRIGATION_INTERVALS: dict[str, int] = {
+    "wheat":  10,
+    "rice":    3,
+    "maize":   7,
+    "tomato":  4,
+}
+
+# Harvest days per crop (end point for irrigation loop)
+CROP_HARVEST_DAYS: dict[str, int] = {
+    "wheat":  120,
+    "rice":    90,
+    "maize":   80,
+    "tomato":  80,
+}
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # Public Entry Point
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -176,14 +214,8 @@ def _milestone_status(
 def build_timeline(season: CropSeason, db: Session) -> list[dict]:
     """
     Build the full crop lifecycle timeline for a given season.
-
-    Returns a list of timeline entries in chronological order:
-        [
-          {"day": 0,  "event": "Sowing",           "status": "DONE"},
-          {"day": 21, "event": "Nitrogen Fertilizer", "status": "OVERDUE"},
-          {"day": 30, "event": "Second Irrigation", "status": "UPCOMING"},
-          ...
-        ]
+    Irrigation milestones are generated dynamically based on the crop's interval.
+    All other milestones are fixed events from CROP_MILESTONES.
     """
     crop_key = season.crop_name.lower().strip()
     milestones = CROP_MILESTONES.get(crop_key)
@@ -200,11 +232,33 @@ def build_timeline(season: CropSeason, db: Session) -> list[dict]:
     sowing_date  = season.sowing_date
     days_elapsed = (date.today() - date.fromisoformat(sowing_date)).days
 
+    # ── Build dynamic irrigation milestones ───────────────────────────────────
+    irr_interval = CROP_IRRIGATION_INTERVALS.get(crop_key, 10)
+    harvest_day  = CROP_HARVEST_DAYS.get(crop_key, 120)
+    lookahead    = days_elapsed + 14   # show past + next ~2 upcoming irrigations
+
+    irrigation_milestones = []
+    irr_day = irr_interval          # first irrigation at day = interval (e.g. 5 for wheat @10d)
+    while irr_day <= harvest_day and irr_day <= lookahead:
+        irrigation_milestones.append({
+            "day":         irr_day,
+            "event":       f"Irrigation (Day {irr_day})",
+            "action_type": "IRRIGATION",
+            "window":      irr_interval // 2 + 1,
+        })
+        irr_day += irr_interval
+    # ─────────────────────────────────────────────────────────────────────────
+
+    # Merge fixed milestones + dynamic irrigation milestones, sort by day
+    all_milestones = milestones + irrigation_milestones
+    all_milestones.sort(key=lambda m: (m["day"], m["event"]))
+
     timeline = []
-    for m in milestones:
+    for m in all_milestones:
         status = _milestone_status(
             season_id     = season.season_id,
             action_type   = m["action_type"],
+            event_name    = m["event"],
             milestone_day = m["day"],
             window        = m.get("window", 7),
             days_elapsed  = days_elapsed,

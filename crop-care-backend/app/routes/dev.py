@@ -61,24 +61,37 @@ def generate_test_season(data: TestSeasonRequest, db: Session = Depends(get_db))
     
     simulated_actions = []
 
-    # 3. Simulate actions
+    # 3. Simulate actions — dates anchored to sowing_date so they land
+    #    inside the milestone windows defined in CROP_MILESTONES.
+    crop_key = data.crop_name.strip().lower()
+
+    # Per-crop irrigation intervals (must match CROP_IRRIGATION_INTERVALS in timeline.py)
+    IRRIGATION_INTERVAL = {"wheat": 10, "rice": 3, "maize": 7, "tomato": 4}.get(crop_key, 10)
+    FERTILIZER_DAY  = {"wheat": 21, "rice": 20, "maize": 21, "tomato": 25}.get(crop_key, 21)
+    WEEDING_DAY     = {"wheat": 21, "rice": 25, "maize": 21, "tomato": 25}.get(crop_key, 21)
+    PESTICIDE_DAY   = {"wheat": 45, "rice": 35, "maize": 30, "tomato": 35}.get(crop_key, 45)
+    FUNGICIDE_DAY   = {"wheat": 60, "rice": 60, "maize": 50, "tomato": 45}.get(crop_key, 60)
+
     if data.simulate_irrigation:
-        # Simulate an irrigation 2 days ago
-        irr_date = (date.today() - timedelta(days=2)).isoformat()
-        db.add(FarmingAction(
-            action_id=str(uuid.uuid4()),
-            season_id=season_id,
-            farmer_id="dev-test-farmer",
-            action_type="IRRIGATION",
-            action_date=irr_date,
-            notes="Simulated test irrigation",
-            is_synced=True
-        ))
+        # Log one irrigation action per interval period that has elapsed since sowing
+        # e.g. wheat interval=10: log at day 10, 20, 25 (up to days_since_sowing)
+        irr_day = IRRIGATION_INTERVAL
+        while irr_day <= data.days_since_sowing:
+            irr_date = (sowing_date_obj + timedelta(days=irr_day)).isoformat()
+            db.add(FarmingAction(
+                action_id=str(uuid.uuid4()),
+                season_id=season_id,
+                farmer_id="dev-test-farmer",
+                action_type="IRRIGATION",
+                action_date=irr_date,
+                notes=f"Simulated irrigation at day {irr_day}",
+                is_synced=True
+            ))
+            irr_day += IRRIGATION_INTERVAL
         simulated_actions.append("IRRIGATION")
 
     if data.simulate_fertilizer:
-        # Simulate fertilizer 5 days ago
-        fert_date = (date.today() - timedelta(days=5)).isoformat()
+        fert_date = (sowing_date_obj + timedelta(days=FERTILIZER_DAY)).isoformat()
         db.add(FarmingAction(
             action_id=str(uuid.uuid4()),
             season_id=season_id,
@@ -91,7 +104,7 @@ def generate_test_season(data: TestSeasonRequest, db: Session = Depends(get_db))
         simulated_actions.append("FERTILIZER_APPLICATION")
 
     if data.simulate_weeding:
-        weed_date = (date.today() - timedelta(days=8)).isoformat()
+        weed_date = (sowing_date_obj + timedelta(days=WEEDING_DAY)).isoformat()
         db.add(FarmingAction(
             action_id=str(uuid.uuid4()),
             season_id=season_id,
@@ -104,7 +117,7 @@ def generate_test_season(data: TestSeasonRequest, db: Session = Depends(get_db))
         simulated_actions.append("WEEDING")
 
     if data.simulate_pesticide:
-        pest_date = (date.today() - timedelta(days=12)).isoformat()
+        pest_date = (sowing_date_obj + timedelta(days=PESTICIDE_DAY)).isoformat()
         db.add(FarmingAction(
             action_id=str(uuid.uuid4()),
             season_id=season_id,
@@ -117,7 +130,7 @@ def generate_test_season(data: TestSeasonRequest, db: Session = Depends(get_db))
         simulated_actions.append("PESTICIDE_SPRAY")
 
     if data.simulate_fungicide:
-        fung_date = (date.today() - timedelta(days=15)).isoformat()
+        fung_date = (sowing_date_obj + timedelta(days=FUNGICIDE_DAY)).isoformat()
         db.add(FarmingAction(
             action_id=str(uuid.uuid4()),
             season_id=season_id,
